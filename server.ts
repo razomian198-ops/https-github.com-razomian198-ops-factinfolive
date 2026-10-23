@@ -1145,6 +1145,8 @@ ${publishedArticles
     });
     app.use(vite.middlewares);
   } else {
+    // Serve images referenced as /src/assets/images/... (they are not bundled into dist by Vite)
+    app.use('/src/assets', express.static(path.resolve(__dirname, 'src/assets')));
     app.use(express.static(path.resolve(__dirname, 'dist')));
     app.get('*', (_req: Request, res: Response) => {
       res.sendFile(path.resolve(__dirname, 'dist/index.html'));
