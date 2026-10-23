@@ -31,7 +31,6 @@ function createRateLimiter(limit: number, windowMs: number, keyPrefix: string = 
       (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
       req.socket.remoteAddress ||
       '127.0.0.1';
-    const ip = req.ip || req.socket.remoteAddress || '127.0.0.1';
     const key = `${keyPrefix}:${ip}`;
     const now = Date.now();
     const bucket = rateLimits.get(key) || { tokens: limit, lastRefill: now };
