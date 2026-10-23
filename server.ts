@@ -352,7 +352,7 @@ ${publishedArticles
   });
 
   // Ask FactInfoLive AI Assistant
-  app.post('/api/assistant/ask', aiRateLimiter, async (req: Request, res: Response) => {
+  app.post('/api/assistant/ask', async (req: Request, res: Response) => {
     try {
       const { query, categoryFilter, language } = req.body;
       if (!query || typeof query !== 'string') {
