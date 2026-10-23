@@ -552,6 +552,7 @@ export class EditorialStore {
         this.persist();
       }
     } catch {
+      try { if (fs.existsSync(STORE_FILE)) fs.copyFileSync(STORE_FILE, STORE_FILE + '.corrupt-' + Date.now()); } catch {}
       this.articles = SEED_ARTICLES;
       this.subscribers = [];
       this.users = INITIAL_USERS;
@@ -572,7 +573,7 @@ export class EditorialStore {
         fs.mkdirSync(DATA_DIR, { recursive: true });
       }
       fs.writeFileSync(
-        STORE_FILE,
+        STORE_FILE + '.tmp',
         JSON.stringify(
           {
             articles: this.articles,
@@ -590,6 +591,7 @@ export class EditorialStore {
         ),
         'utf-8'
       );
+      fs.renameSync(STORE_FILE + '.tmp', STORE_FILE); // atomic: file is never half-written
     } catch {
       // In-memory fallback if file write restricted
     }
