@@ -60,7 +60,6 @@ const apiRateLimiter = createRateLimiter(200, 60 * 1000, 'api');     // 200 requ
 
 async function startServer() {
   const app = express();
-  app.set('trust proxy', 1);
 
   // Parse command line arguments (--port 3000, --host 0.0.0.0)
   const portArgIdx = process.argv.indexOf('--port');
