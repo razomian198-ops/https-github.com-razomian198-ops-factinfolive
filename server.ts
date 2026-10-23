@@ -593,7 +593,7 @@ ${publishedArticles
   });
 
   // Create article (Authenticated authors, editors, administrators)
-  app.post('/api/editorial/summarize-story', aiRateLimiter, async (req: Request, res: Response) => {
+  app.post('/api/editorial/summarize-story', async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
     const user = editorialStore.verifySession(authHeader);
     if (!user) {
