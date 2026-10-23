@@ -31,6 +31,7 @@ function createRateLimiter(limit: number, windowMs: number, keyPrefix: string = 
       (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
       req.socket.remoteAddress ||
       '127.0.0.1';
+    const ip = req.ip || req.socket.remoteAddress || '127.0.0.1';
     const key = `${keyPrefix}:${ip}`;
     const now = Date.now();
     const bucket = rateLimits.get(key) || { tokens: limit, lastRefill: now };
@@ -60,6 +61,7 @@ const apiRateLimiter = createRateLimiter(200, 60 * 1000, 'api');     // 200 requ
 
 async function startServer() {
   const app = express();
+  app.set('trust proxy', 1);
 
   // Parse command line arguments (--port 3000, --host 0.0.0.0)
   const portArgIdx = process.argv.indexOf('--port');
@@ -350,7 +352,7 @@ ${publishedArticles
   });
 
   // Ask FactInfoLive AI Assistant
-  app.post('/api/assistant/ask', async (req: Request, res: Response) => {
+  app.post('/api/assistant/ask', aiRateLimiter, async (req: Request, res: Response) => {
     try {
       const { query, categoryFilter, language } = req.body;
       if (!query || typeof query !== 'string') {
@@ -592,7 +594,7 @@ ${publishedArticles
   });
 
   // Create article (Authenticated authors, editors, administrators)
-  app.post('/api/editorial/articles', (req: Request, res: Response) => {
+  app.post('/api/editorial/summarize-story', aiRateLimiter, async (req: Request, res: Response) => {
     const authHeader = req.headers.authorization;
     const user = editorialStore.verifySession(authHeader);
     if (!user) {
